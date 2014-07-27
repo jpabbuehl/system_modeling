@@ -15,10 +15,17 @@ sd=0.9
   data_highSD <- data[idxHighVar,]
   
   max_ranking <- length(unique(pData(eset)[,'Drug']))-2
-  clustering_sample <- nmf(data_highSD,rank=3:max_ranking,method="lee",seed='ica',.opt="vP")
   data_random<-randomize(data_highSD)
-  clustering_control <- nmf(data_random),rank=3:max_ranking,method="lee",seed='ica',.opt="vP")
-
+  
+  rss_sample<-vector()
+  rss_control<-vector()
+  for(i in 3:max_ranking){
+    cat(paste("Evaluating ",i," metagroups\n",sep=""))
+    clustering_sample <- nmf(data_highSD,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
+    rss_sample<-append(rss_sample,residuals(clustering_sample))
+    clustering_control <- nmf(data_random,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
+    rss_control<-append(rss_control,residuals(clustering_control))
+  }
 # Find optimal ranking by comparing residual slopes between data and random data		
 measures_sample<-clustering_sample$measures
 measures_control<-clustering_control$measures
