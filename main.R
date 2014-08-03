@@ -1,45 +1,74 @@
 # additional approach - First determine the number of subpopulations by subtypes the samples
 nmf_test <- function(
 eset,
-sd=0.9
+sd=0.5
 )
 {
-
   library(NMF)
   library(fastICA)
-  subset<-eset[,eset@phenoData@data$Time==6]
-  data<-exprs(subset)
-  cat("Removing genes with low sample variance...\n")
-  SampleVar <- apply(data[1:nrow(data),],1,var)
-  idxHighVar <- SampleVar > quantile(SampleVar,probs = 0.8)
-  data_highSD <- data[idxHighVar,]
+  time=unique(eset$Time)
+  druglist=initialize_drug(eset)
+  ICeset<-eset[,eset@phenoData@data$Concentration=='IC20']
   
-  max_ranking <- length(unique(pData(eset)[,'Drug']))-2
-  data_random<-randomize(data_highSD)
+  # Timewise clustering  
+  set.seed(1234)
+  for(t in 1:length(time)){
+    subset<-ICeset[,ICeset@phenoData@data$Time==time[t]]
+    data<-exprs(subset)
+    cat("Removing genes with low sample variance...\n")
+    SampleVar <- apply(data[1:nrow(data),],1,var)
+    idxHighVar <- SampleVar > quantile(SampleVar,probs = sd)
+    data_highSD <- data[idxHighVar,]
+    
+    max_ranking <- length(druglist)
+    data_random<-randomize(data_highSD)
   
-  rss_sample<-vector()
-  rss_control<-vector()
-  for(i in 3:max_ranking){
-    cat(paste("Evaluating ",i," metagroups\n",sep=""))
-    clustering_sample <- nmf(data_highSD,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
-    rss_sample<-append(rss_sample,residuals(clustering_sample))
-    clustering_control <- nmf(data_random,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
-    rss_control<-append(rss_control,residuals(clustering_control))
-  }
-# Find optimal ranking by comparing residual slopes between data and random data		
-measures_sample<-clustering_sample$measures
-measures_control<-clustering_control$measures
-slope_sample<-vector(NULL)
-slope_control<-vector(NULL)
-for(i in 3:dim(ctrl)[1]) {
-	slope_sample<-append(slope_sample,measures_sample[i-1,'residuals']-measures_sample[i,'residuals'])
-	slope_control<-append(slope_control,measures_control[i-1,'residuals']-measures_control[i,'residuals'])
-}
-
-# Graph about Residual vs ranking for decision process # To complete
-
-
-return (measures_samples)
+    for(i in 2:max_ranking){
+      cat(paste("Evaluating ",i," metagroups\n",sep=""))
+      cl_sample <- nmf(data_highSD,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
+      cl_random <- nmf(data_random,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
+      if(i==2){
+        clustering_data<-list(cl_sample)
+        clustering_control<list(cl_random)
+      } else{
+        clustering_data<-append(clustering_data,list(cl_sample))
+        clustering_control<-append(clustering_control,list(cl_random))
+      }
+    } # End ranking evaluation
+  } # End Timewise clustering
+  
+  save(file='timewise clustering data.rda',clustering_data)
+  save(file='timewise clustering ctrl.rda',clustering_control)
+  
+  # Drugwise clustering  
+  set.seed(1234)
+  for(t in 1:length(druglist)){
+    subset<-ICeset[,ICeset@phenoData@data$Drug==druglist[t]]
+    data<-exprs(subset)
+    cat("Removing genes with low sample variance...\n")
+    SampleVar <- apply(data[1:nrow(data),],1,var)
+    idxHighVar <- SampleVar > quantile(SampleVar,probs = sd)
+    data_highSD <- data[idxHighVar,]
+    
+    max_ranking <- length(time)
+    data_random<-randomize(data_highSD)
+    
+    for(i in 2:max_ranking){
+      cat(paste("Evaluating ",i," metagroups\n",sep=""))
+      cl_sample <- nmf(data_highSD,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
+      cl_random <- nmf(data_random,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
+      if(i==2){
+        clustering_data<-list(cl_sample)
+        clustering_control<list(cl_random)
+      } else{
+        clustering_data<-append(clustering_data,list(cl_sample))
+        clustering_control<-append(clustering_control,list(cl_random))
+      }
+    } # End ranking evaluation
+  } # End Drugwise clustering
+  
+  save(file='drugwise clustering data.rda',clustering_data)
+  save(file='drugwise clustering ctrl.rda',clustering_control) 
 }
 
 # 1st step - Find differentially expressed genes with Betr package
@@ -378,7 +407,7 @@ loop_model_fit <- function(eset,drug,probeset,model,pval_anova,drug_flag) {
 }
 
 #3rd step - Subpopulations definitions
-capture_signature <- function(drug,fit_result,timepoint,permanent_effect,distinct_signature) {
+ capture_signature <- function(drug,fit_result,timepoint,permanent_effect,distinct_signature) {
 	druglist<-initialize_drug(eset)
 	DSS<-as.vector(NULL) # Up genes -->  increased expression of genes with increasing drug concentration --> Subpopulation spared
 	DES<-as.vector(NULL) # Down genes -->  decreased expression of genes with increasing drug concentration --> Subpopulation eliminated
