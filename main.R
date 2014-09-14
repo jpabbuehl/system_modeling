@@ -1,7 +1,7 @@
 # additional approach - First determine the number of subpopulations by subtypes the samples
 nmf_test <- function(
 eset,
-sd=0.5
+sd=0.9
 )
 {
   library(NMF)
@@ -10,8 +10,27 @@ sd=0.5
   druglist=initialize_drug(eset)
   ICeset<-eset[,eset@phenoData@data$Concentration=='IC20']
   
-  # Timewise clustering  
+  #test ranking 42 subtypes for different SD
   set.seed(1234)
+  data<-exprs(ICeset)
+  SampleVar <- apply(data[1:nrow(data),],1,var)
+  sd=.5
+  test<-list()
+  for(x in 0:9) { 
+    idxHighVar <- SampleVar > quantile(SampleVar,probs = (sd+.05*x)
+    data_highSD <- data[idxHighVar,]
+    cl_sample <- nmf(data_highSD,rank=42,method="lee",seed='random',.opt="-v+P",nrun=30)
+    test<-append(test,cl_sample)  
+  }
+  
+  
+  # Timewise clustering
+  # Determine the reduction of heterogeneity over time, ideally 9 at t1, 7 at t2 and 3 at t3
+  # Min 2, Max 14 
+  set.seed(1234)
+  clustering_data<-list()
+  clustering_control<-list()
+  
   for(t in 1:length(time)){
     subset<-ICeset[,ICeset@phenoData@data$Time==time[t]]
     data<-exprs(subset)
@@ -25,14 +44,10 @@ sd=0.5
   
     for(i in 2:max_ranking){
       cat(paste("Evaluating ",i," metagroups\n",sep=""))
-      cl_sample <- nmf(data_highSD,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
-      cl_random <- nmf(data_random,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
-      if(i==2){
-        clustering_data<-list(cl_sample)
-        clustering_control<list(cl_random)
-      } else{
-        clustering_data<-append(clustering_data,list(cl_sample))
-        clustering_control<-append(clustering_control,list(cl_random))
+      cl_sample <- nmf(data_highSD,rank=i,method="lee",seed='random',.opt="-v+P",nrun=30)
+      cl_random <- nmf(data_random,rank=i,method="lee",seed='random',.opt="-v+P",nrun=30)
+      clustering_data<-append(clustering_data,list(cl_sample))
+      clustering_control<-append(clustering_control,list(cl_random))
       }
     } # End ranking evaluation
   } # End Timewise clustering
@@ -40,8 +55,13 @@ sd=0.5
   save(file='timewise clustering data.rda',clustering_data)
   save(file='timewise clustering ctrl.rda',clustering_control)
   
-  # Drugwise clustering  
+  # Drugwise clustering
+  # Determine the drug effect on heterogeneity over time
+  # Min 1, max 3
   set.seed(1234)
+  clustering_data2<-list()
+  clustering_control2<-list()
+
   for(t in 1:length(druglist)){
     subset<-ICeset[,ICeset@phenoData@data$Drug==druglist[t]]
     data<-exprs(subset)
@@ -55,20 +75,29 @@ sd=0.5
     
     for(i in 2:max_ranking){
       cat(paste("Evaluating ",i," metagroups\n",sep=""))
-      cl_sample <- nmf(data_highSD,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
-      cl_random <- nmf(data_random,rank=i,method="lee",seed='ica',.opt="-v+P",nrun=30)
-      if(i==2){
-        clustering_data<-list(cl_sample)
-        clustering_control<list(cl_random)
-      } else{
-        clustering_data<-append(clustering_data,list(cl_sample))
-        clustering_control<-append(clustering_control,list(cl_random))
+      cl_sample <- nmf(data_highSD,rank=i,method="lee",seed='random',.opt="-v+P",nrun=30)
+      cl_random <- nmf(data_random,rank=i,method="lee",seed='random',.opt="-v+P",nrun=30)
+      clustering_data2<-append(clustering_data2,list(cl_sample))
+      clustering_control2<-append(clustering_control2,list(cl_random))
       }
     } # End ranking evaluation
   } # End Drugwise clustering
   
-  save(file='drugwise clustering data.rda',clustering_data)
-  save(file='drugwise clustering ctrl.rda',clustering_control) 
+  save(file='drugwise clustering data.rda',clustering_data2)
+  save(file='drugwise clustering ctrl.rda',clustering_control2) 
+  
+  # Process all data, make table with 3 rows (time) and 14 columns (drug)
+  # What if replicates are not robust ?
+  # Timewise clustering: Colors
+  # Drugwise clustering: 
+  dRSS_data<-vector()
+  dRSS_ctrl<-vector()
+  
+  for(i in 1:(length(clustering_data)-1)){
+    dRSS_data<-append(dRSS_data,residuals(clustering_data[[i]])-residuals(clustering_data[[i+1]]))
+    dRSS_ctrl<-append(dRSS_ctrl,residuals(clustering_control[[i]])-residuals(clustering_control[[i+1]]))
+  }
+  
 }
 
 # 1st step - Find differentially expressed genes with Betr package
@@ -135,6 +164,37 @@ loop_betr_filter <- function(eset,drug_test,ctrl,threshold) {
 	return (probe_id)
 }
 
+#2nd new step - Probeset-drug concentration model fitting from basis NMF factor
+model_fit2<- function(
+eset,
+nmf_result,
+model='DRC',
+pval=.05,
+size=100,
+drug_data=FALSE,
+report=TRUE
+)
+{
+  druglist<-initialize_drug(eset)
+  time<-unique(eset$Time)
+  subset<-eset[,eset@phenoData@data$Time==time[1]]
+  
+  output<-list()
+  
+  # Generate dataframe of basis vectors of probeset (rows) for all drugs (columns) at timepoint 6hr
+  
+  for(i in 1:length(druglist)){
+    # First, find the subtype of each drug, extract basis vector and sort by contribution
+    # Check just at first timepoint
+    
+    drug_subset<-subset[,subset@phenoData@data$Drug==druglist[i]]
+    fit_result<-loop_model_fit(drug_subset,nmf_basis,model,pval,size,drug_data)
+    output<-append(output,list(fit_result))
+  }
+  return (output)
+}
+  
+  
 #2nd step - Probeset-Drug concentration model fitting
 model_fit <- function(
 eset,
@@ -407,7 +467,7 @@ loop_model_fit <- function(eset,drug,probeset,model,pval_anova,drug_flag) {
 }
 
 #3rd step - Subpopulations definitions
- capture_signature <- function(drug,fit_result,timepoint,permanent_effect,distinct_signature) {
+capture_signature <- function(drug,fit_result,timepoint,permanent_effect,distinct_signature) {
 	druglist<-initialize_drug(eset)
 	DSS<-as.vector(NULL) # Up genes -->  increased expression of genes with increasing drug concentration --> Subpopulation spared
 	DES<-as.vector(NULL) # Down genes -->  decreased expression of genes with increasing drug concentration --> Subpopulation eliminated
