@@ -143,6 +143,7 @@ combination_graph<-function(eset,rank_prediction,druglist,fit_result) {
 
 network_scoring<-function(rank_prediction,druglist,top=10) {
   library(igraph)
+  library(Matrix)
   set.seed(3952)
   predicted_data<-prediction_matrix(rank_prediction,druglist)
   data<-experimental_matrix(druglist)

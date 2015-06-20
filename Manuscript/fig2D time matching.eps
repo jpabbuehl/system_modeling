@@ -1,0 +1,858 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%DocumentNeededResources: font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Helvetica-Oblique
+%%+ font Helvetica-BoldOblique
+%%+ font Symbol
+%%Title: R Graphics Output
+%%Creator: R Software
+%%Pages: (atend)
+%%BoundingBox: 0 0 827 566
+%%EndComments
+%%BeginProlog
+/bp  { gs sRGB gs } def
+% begin .ps.prolog
+/gs  { gsave } bind def
+/gr  { grestore } bind def
+/ep  { showpage gr gr } bind def
+/m   { moveto } bind def
+/l  { rlineto } bind def
+/np  { newpath } bind def
+/cp  { closepath } bind def
+/f   { fill } bind def
+/o   { stroke } bind def
+/c   { newpath 0 360 arc } bind def
+/r   { 4 2 roll moveto 1 copy 3 -1 roll exch 0 exch rlineto 0 rlineto -1 mul 0 exch rlineto closepath } bind def
+/p1  { stroke } bind def
+/p2  { gsave bg fill grestore newpath } bind def
+/p3  { gsave bg fill grestore stroke } bind def
+/p6  { gsave bg eofill grestore newpath } bind def
+/p7  { gsave bg eofill grestore stroke } bind def
+/t   { 5 -2 roll moveto gsave rotate
+       1 index stringwidth pop
+       mul neg 0 rmoveto show grestore } bind def
+/ta  { 4 -2 roll moveto gsave rotate show } bind def
+/tb  { 2 -1 roll 0 rmoveto show } bind def
+/cl  { grestore gsave newpath 3 index 3 index moveto 1 index
+       4 -1 roll lineto  exch 1 index lineto lineto
+       closepath clip newpath } bind def
+/rgb { setrgbcolor } bind def
+/s   { scalefont setfont } bind def
+% end   .ps.prolog
+/sRGB { [ /CIEBasedABC
+          << /DecodeLMN
+               [ { dup 0.03928 le
+                        {12.92321 div}
+                        {0.055 add 1.055 div 2.4 exp }
+                     ifelse
+                 } bind dup dup
+               ]
+             /MatrixLMN [0.412457 0.212673 0.019334
+                         0.357576 0.715152 0.119192
+                         0.180437 0.072175 0.950301]
+             /WhitePoint [0.9505 1.0 1.0890]
+           >>
+         ] setcolorspace } bind def
+/srgb { setcolor } bind def
+% begin encoding
+/WinAnsiEncoding [
+ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+ /space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright
+ /parenleft /parenright /asterisk /plus /comma /minus /period /slash
+ /zero /one /two /three /four /five /six /seven
+ /eight /nine /colon /semicolon /less /equal /greater /question
+ /at /A /B /C /D /E /F /G
+ /H /I /J /K /L /M /N /O
+ /P /Q /R /S /T /U /V /W
+ /X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore
+ /grave /a /b /c /d /e /f /g
+ /h /i /j /k /l /m /n /o
+ /p /q /r /s /t /u /v /w
+ /x /y /z /braceleft /bar /braceright /asciitilde /.notdef
+ /Euro /.notdef /quotesinglbase /florin /quotedblbase /ellipsis /dagger /daggerdbl
+ /circumflex /perthousand /Scaron /guilsinglleft /OE /.notdef /Zcaron /.notdef
+ /.notdef /quoteleft /quoteright /quotedblleft /quotedblright /bullet /endash /emdash
+ /tilde /trademark /scaron /guilsinglright /oe /.notdef /zcaron /Ydieresis
+ /space /exclamdown /cent /sterling /currency /yen /brokenbar /section
+ /dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron
+ /degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /periodcentered
+ /cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown
+ /Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla
+ /Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis
+ /Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply
+ /Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls
+ /agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla
+ /egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis
+ /eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide
+ /oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis
+]
+ def
+% end encoding
+%%IncludeResource: font Helvetica
+/Helvetica findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding WinAnsiEncoding def
+  currentdict
+  end
+/Font1 exch definefont pop
+%%IncludeResource: font Helvetica-Bold
+/Helvetica-Bold findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding WinAnsiEncoding def
+  currentdict
+  end
+/Font2 exch definefont pop
+%%IncludeResource: font Helvetica-Oblique
+/Helvetica-Oblique findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding WinAnsiEncoding def
+  currentdict
+  end
+/Font3 exch definefont pop
+%%IncludeResource: font Helvetica-BoldOblique
+/Helvetica-BoldOblique findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding WinAnsiEncoding def
+  currentdict
+  end
+/Font4 exch definefont pop
+%%IncludeResource: font Symbol
+/Symbol findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  currentdict
+  end
+/Font5 exch definefont pop
+%%EndProlog
+%%Page: 1 1
+bp
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+/bg { 1 1 1 srgb } def
+1 1 1 srgb
+1.06 setlinewidth
+[] 0 setdash
+1 setlinecap
+1 setlinejoin
+10.00 setmiterlimit
+0.00 0.00 827.25 566.25 r p3
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+150.87 109.05 709.28 513.78 cl
+/bg { 0.8980 0.8980 0.8980 srgb } def
+150.87 109.05 558.41 404.72 r p2
+1 1 1 srgb
+1.06 setlinewidth
+[] 0 setdash
+0 setlinecap
+1 setlinejoin
+10.00 setmiterlimit
+np
+150.87 123.51 m
+558.41 0 l
+o
+np
+150.87 152.41 m
+558.41 0 l
+o
+np
+150.87 181.32 m
+558.41 0 l
+o
+np
+150.87 210.23 m
+558.41 0 l
+o
+np
+150.87 239.14 m
+558.41 0 l
+o
+np
+150.87 268.05 m
+558.41 0 l
+o
+np
+150.87 296.96 m
+558.41 0 l
+o
+np
+150.87 325.87 m
+558.41 0 l
+o
+np
+150.87 354.78 m
+558.41 0 l
+o
+np
+150.87 383.69 m
+558.41 0 l
+o
+np
+150.87 412.59 m
+558.41 0 l
+o
+np
+150.87 441.50 m
+558.41 0 l
+o
+np
+150.87 470.41 m
+558.41 0 l
+o
+np
+150.87 499.32 m
+558.41 0 l
+o
+np
+170.81 109.05 m
+0 404.73 l
+o
+np
+210.70 109.05 m
+0 404.73 l
+o
+np
+250.59 109.05 m
+0 404.73 l
+o
+np
+290.47 109.05 m
+0 404.73 l
+o
+np
+330.36 109.05 m
+0 404.73 l
+o
+np
+370.24 109.05 m
+0 404.73 l
+o
+np
+410.13 109.05 m
+0 404.73 l
+o
+np
+450.02 109.05 m
+0 404.73 l
+o
+np
+489.90 109.05 m
+0 404.73 l
+o
+np
+529.79 109.05 m
+0 404.73 l
+o
+np
+569.68 109.05 m
+0 404.73 l
+o
+np
+609.56 109.05 m
+0 404.73 l
+o
+np
+649.45 109.05 m
+0 404.73 l
+o
+np
+689.33 109.05 m
+0 404.73 l
+o
+/bg { 1 0.6667 0.5608 srgb } def
+0.21 setlinewidth
+[] 0 setdash
+469.96 253.60 39.89 28.91 r p3
+/bg { 1 0.9294 0.9059 srgb } def
+469.96 455.96 39.89 28.91 r p3
+/bg { 1 0.5804 0.4588 srgb } def
+469.96 427.05 39.89 28.91 r p3
+/bg { 1 0.9843 0.9765 srgb } def
+469.96 369.23 39.89 28.91 r p3
+/bg { 1 0.3961 0.2627 srgb } def
+469.96 398.14 39.89 28.91 r p3
+/bg { 0.7686 0.6353 1 srgb } def
+469.96 484.87 39.89 28.91 r p3
+/bg { 1 0.7765 0.7020 srgb } def
+469.96 340.32 39.89 28.91 r p3
+/bg { 1 0.3725 0.2431 srgb } def
+469.96 311.41 39.89 28.91 r p3
+/bg { 0.9020 0.8353 1 srgb } def
+469.96 224.69 39.89 28.91 r p3
+/bg { 1 0.7569 0.6784 srgb } def
+469.96 166.87 39.89 28.91 r p3
+/bg { 1 0.7647 0.6863 srgb } def
+469.96 137.96 39.89 28.91 r p3
+/bg { 1 0.2902 0.1686 srgb } def
+469.96 109.05 39.89 28.91 r p3
+/bg { 1 0.4824 0.3529 srgb } def
+469.96 195.78 39.89 28.91 r p3
+/bg { 1 0.5765 0.4549 srgb } def
+469.96 282.50 39.89 28.91 r p3
+/bg { 1 0.5294 0.4039 srgb } def
+190.76 253.60 39.89 28.91 r p3
+/bg { 1 0.6235 0.5137 srgb } def
+190.76 455.96 39.89 28.91 r p3
+/bg { 1 0.1922 0.0941 srgb } def
+190.76 427.05 39.89 28.91 r p3
+/bg { 1 0.7647 0.6863 srgb } def
+190.76 369.23 39.89 28.91 r p3
+/bg { 1 0.0431 0.0078 srgb } def
+190.76 398.14 39.89 28.91 r p3
+/bg { 0.2627 0.1333 1 srgb } def
+190.76 484.87 39.89 28.91 r p3
+/bg { 1 0.3490 0.2196 srgb } def
+190.76 340.32 39.89 28.91 r p3
+/bg { 0.8706 0.7843 1 srgb } def
+190.76 311.41 39.89 28.91 r p3
+/bg { 1 0.8471 0.7922 srgb } def
+190.76 224.69 39.89 28.91 r p3
+/bg { 1 0.7294 0.6431 srgb } def
+190.76 166.87 39.89 28.91 r p3
+/bg { 1 0.2039 0.1059 srgb } def
+190.76 137.96 39.89 28.91 r p3
+/bg { 0.9882 0.9843 1 srgb } def
+190.76 109.05 39.89 28.91 r p3
+/bg { 1 0.3137 0.1882 srgb } def
+190.76 195.78 39.89 28.91 r p3
+/bg { 1 1 1 srgb } def
+190.76 282.50 39.89 28.91 r p3
+/bg { 0.4314 0.2627 1 srgb } def
+230.64 253.60 39.89 28.91 r p3
+/bg { 0.9961 0.9961 1 srgb } def
+230.64 455.96 39.89 28.91 r p3
+/bg { 1 0.5843 0.4627 srgb } def
+230.64 427.05 39.89 28.91 r p3
+/bg { 0.7333 0.5882 1 srgb } def
+230.64 369.23 39.89 28.91 r p3
+/bg { 0.8392 0.7373 1 srgb } def
+230.64 398.14 39.89 28.91 r p3
+/bg { 0.8157 0.7020 1 srgb } def
+230.64 484.87 39.89 28.91 r p3
+/bg { 0.2118 0.0980 1 srgb } def
+230.64 340.32 39.89 28.91 r p3
+/bg { 0.8863 0.8078 1 srgb } def
+230.64 311.41 39.89 28.91 r p3
+/bg { 0.6627 0.5020 1 srgb } def
+230.64 224.69 39.89 28.91 r p3
+/bg { 0.7647 0.6314 1 srgb } def
+230.64 166.87 39.89 28.91 r p3
+/bg { 0.5686 0.3961 1 srgb } def
+230.64 137.96 39.89 28.91 r p3
+/bg { 1 0.7098 0.6157 srgb } def
+230.64 109.05 39.89 28.91 r p3
+/bg { 1 0.9922 0.9882 srgb } def
+230.64 195.78 39.89 28.91 r p3
+/bg { 0.9373 0.8941 1 srgb } def
+230.64 282.50 39.89 28.91 r p3
+/bg { 0.9490 0.9098 1 srgb } def
+310.42 253.60 39.89 28.91 r p3
+/bg { 0.7451 0.6039 1 srgb } def
+310.42 455.96 39.89 28.91 r p3
+/bg { 0.8667 0.7765 1 srgb } def
+310.42 427.05 39.89 28.91 r p3
+/bg { 1 0.6431 0.5373 srgb } def
+310.42 369.23 39.89 28.91 r p3
+/bg { 1 0.1843 0.0902 srgb } def
+310.42 398.14 39.89 28.91 r p3
+/bg { 0.3176 0.1725 1 srgb } def
+310.42 484.87 39.89 28.91 r p3
+/bg { 0.4667 0.2941 1 srgb } def
+310.42 340.32 39.89 28.91 r p3
+/bg { 0.8431 0.7412 1 srgb } def
+310.42 311.41 39.89 28.91 r p3
+/bg { 0.6392 0.4706 1 srgb } def
+310.42 224.69 39.89 28.91 r p3
+/bg { 0.5647 0.3882 1 srgb } def
+310.42 166.87 39.89 28.91 r p3
+/bg { 1 0.7529 0.6706 srgb } def
+310.42 137.96 39.89 28.91 r p3
+/bg { 1 0.8902 0.8510 srgb } def
+310.42 109.05 39.89 28.91 r p3
+/bg { 1 0.2510 0.1373 srgb } def
+310.42 195.78 39.89 28.91 r p3
+/bg { 1 0.7686 0.6902 srgb } def
+310.42 282.50 39.89 28.91 r p3
+/bg { 1 0.6667 0.5647 srgb } def
+270.53 253.60 39.89 28.91 r p3
+/bg { 0.9176 0.8627 1 srgb } def
+270.53 455.96 39.89 28.91 r p3
+/bg { 1 0.9451 0.9255 srgb } def
+270.53 427.05 39.89 28.91 r p3
+/bg { 1 0.6118 0.4980 srgb } def
+270.53 369.23 39.89 28.91 r p3
+/bg { 1 0.6667 0.5647 srgb } def
+270.53 398.14 39.89 28.91 r p3
+/bg { 1 0.5216 0.3961 srgb } def
+270.53 484.87 39.89 28.91 r p3
+/bg { 0.9725 0.9529 1 srgb } def
+270.53 340.32 39.89 28.91 r p3
+/bg { 1 0.6627 0.5569 srgb } def
+270.53 311.41 39.89 28.91 r p3
+/bg { 1 0.5725 0.4549 srgb } def
+270.53 224.69 39.89 28.91 r p3
+/bg { 0.9804 0.9647 1 srgb } def
+270.53 166.87 39.89 28.91 r p3
+/bg { 0.6706 0.5059 1 srgb } def
+270.53 137.96 39.89 28.91 r p3
+/bg { 1 0.9608 0.9451 srgb } def
+270.53 109.05 39.89 28.91 r p3
+/bg { 0.7490 0.6078 1 srgb } def
+270.53 195.78 39.89 28.91 r p3
+/bg { 0.4784 0.3059 1 srgb } def
+270.53 282.50 39.89 28.91 r p3
+/bg { 1 0.8157 0.7529 srgb } def
+150.87 253.60 39.89 28.91 r p3
+/bg { 1 0.8392 0.7843 srgb } def
+150.87 455.96 39.89 28.91 r p3
+/bg { 1 0.2824 0.1608 srgb } def
+150.87 427.05 39.89 28.91 r p3
+/bg { 1 0.8863 0.8471 srgb } def
+150.87 369.23 39.89 28.91 r p3
+/bg { 1 0.2275 0.1216 srgb } def
+150.87 398.14 39.89 28.91 r p3
+/bg { 1 0.5529 0.4314 srgb } def
+150.87 484.87 39.89 28.91 r p3
+/bg { 1 0.5137 0.3843 srgb } def
+150.87 340.32 39.89 28.91 r p3
+/bg { 0.9216 0.8667 1 srgb } def
+150.87 311.41 39.89 28.91 r p3
+/bg { 1 0.8706 0.8235 srgb } def
+150.87 224.69 39.89 28.91 r p3
+/bg { 1 0.9098 0.8745 srgb } def
+150.87 166.87 39.89 28.91 r p3
+/bg { 1 0.2941 0.1725 srgb } def
+150.87 137.96 39.89 28.91 r p3
+/bg { 0.9020 0.8314 1 srgb } def
+150.87 109.05 39.89 28.91 r p3
+/bg { 1 0.3608 0.2314 srgb } def
+150.87 195.78 39.89 28.91 r p3
+/bg { 1 0.5647 0.4431 srgb } def
+150.87 282.50 39.89 28.91 r p3
+/bg { 0.5961 0.4235 1 srgb } def
+350.30 253.60 39.89 28.91 r p3
+/bg { 1 0.9216 0.8902 srgb } def
+350.30 455.96 39.89 28.91 r p3
+/bg { 0.3882 0.2275 1 srgb } def
+350.30 427.05 39.89 28.91 r p3
+/bg { 0.7137 0.5647 1 srgb } def
+350.30 369.23 39.89 28.91 r p3
+/bg { 0.9020 0.8353 1 srgb } def
+350.30 398.14 39.89 28.91 r p3
+/bg { 1 0.9686 0.9569 srgb } def
+350.30 484.87 39.89 28.91 r p3
+/bg { 1 0.6471 0.5412 srgb } def
+350.30 340.32 39.89 28.91 r p3
+/bg { 1 0.9333 0.9098 srgb } def
+350.30 311.41 39.89 28.91 r p3
+/bg { 0.6863 0.5294 1 srgb } def
+350.30 224.69 39.89 28.91 r p3
+/bg { 0.7020 0.5490 1 srgb } def
+350.30 166.87 39.89 28.91 r p3
+/bg { 0.6431 0.4745 1 srgb } def
+350.30 137.96 39.89 28.91 r p3
+/bg { 1 0.6745 0.5725 srgb } def
+350.30 109.05 39.89 28.91 r p3
+/bg { 0.8314 0.7255 1 srgb } def
+350.30 195.78 39.89 28.91 r p3
+/bg { 1 0.6588 0.5529 srgb } def
+350.30 282.50 39.89 28.91 r p3
+/bg { 1 0.8196 0.7608 srgb } def
+390.19 253.60 39.89 28.91 r p3
+/bg { 1 0.6157 0.5020 srgb } def
+390.19 455.96 39.89 28.91 r p3
+/bg { 1 0.8196 0.7569 srgb } def
+390.19 427.05 39.89 28.91 r p3
+/bg { 1 0.6745 0.5725 srgb } def
+390.19 369.23 39.89 28.91 r p3
+/bg { 1 0.9961 0.9922 srgb } def
+390.19 398.14 39.89 28.91 r p3
+/bg { 0.7922 0.6706 1 srgb } def
+390.19 484.87 39.89 28.91 r p3
+/bg { 1 0.6863 0.5882 srgb } def
+390.19 340.32 39.89 28.91 r p3
+/bg { 1 0.6471 0.5412 srgb } def
+390.19 311.41 39.89 28.91 r p3
+/bg { 1 0.6431 0.5373 srgb } def
+390.19 224.69 39.89 28.91 r p3
+/bg { 0.8157 0.7059 1 srgb } def
+390.19 166.87 39.89 28.91 r p3
+/bg { 1 0.7922 0.7216 srgb } def
+390.19 137.96 39.89 28.91 r p3
+/bg { 0.7137 0.5608 1 srgb } def
+390.19 109.05 39.89 28.91 r p3
+/bg { 1 0.5020 0.3765 srgb } def
+390.19 195.78 39.89 28.91 r p3
+/bg { 0.8314 0.7216 1 srgb } def
+390.19 282.50 39.89 28.91 r p3
+/bg { 0.6706 0.5059 1 srgb } def
+509.85 253.60 39.89 28.91 r p3
+/bg { 1 0.9843 0.9804 srgb } def
+509.85 455.96 39.89 28.91 r p3
+/bg { 0.4902 0.3137 1 srgb } def
+509.85 427.05 39.89 28.91 r p3
+/bg { 1 0.8824 0.8392 srgb } def
+509.85 369.23 39.89 28.91 r p3
+/bg { 0.7294 0.5843 1 srgb } def
+509.85 398.14 39.89 28.91 r p3
+/bg { 1 0.7137 0.6196 srgb } def
+509.85 484.87 39.89 28.91 r p3
+/bg { 0.7529 0.6157 1 srgb } def
+509.85 340.32 39.89 28.91 r p3
+/bg { 1 0.6431 0.5373 srgb } def
+509.85 311.41 39.89 28.91 r p3
+/bg { 1 0.7804 0.7098 srgb } def
+509.85 224.69 39.89 28.91 r p3
+/bg { 1 0.6627 0.5569 srgb } def
+509.85 166.87 39.89 28.91 r p3
+/bg { 0.6039 0.4314 1 srgb } def
+509.85 137.96 39.89 28.91 r p3
+/bg { 0.9020 0.8314 1 srgb } def
+509.85 109.05 39.89 28.91 r p3
+/bg { 1 0.5961 0.4784 srgb } def
+509.85 195.78 39.89 28.91 r p3
+/bg { 1 0.9059 0.8706 srgb } def
+509.85 282.50 39.89 28.91 r p3
+/bg { 1 0.5412 0.4157 srgb } def
+589.62 253.60 39.89 28.91 r p3
+/bg { 0.3098 0.1647 1 srgb } def
+589.62 455.96 39.89 28.91 r p3
+/bg { 1 0.7059 0.6118 srgb } def
+589.62 427.05 39.89 28.91 r p3
+/bg { 1 0.9608 0.9451 srgb } def
+589.62 369.23 39.89 28.91 r p3
+/bg { 0.6431 0.4784 1 srgb } def
+589.62 398.14 39.89 28.91 r p3
+/bg { 0.8235 0.7137 1 srgb } def
+589.62 484.87 39.89 28.91 r p3
+/bg { 0.5569 0.3804 1 srgb } def
+589.62 340.32 39.89 28.91 r p3
+/bg { 0.4118 0.2471 1 srgb } def
+589.62 311.41 39.89 28.91 r p3
+/bg { 1 0.7569 0.6784 srgb } def
+589.62 224.69 39.89 28.91 r p3
+/bg { 1 0.5804 0.4588 srgb } def
+589.62 166.87 39.89 28.91 r p3
+/bg { 1 0.3961 0.2627 srgb } def
+589.62 137.96 39.89 28.91 r p3
+/bg { 0.7882 0.6667 1 srgb } def
+589.62 109.05 39.89 28.91 r p3
+/bg { 0.8627 0.7686 1 srgb } def
+589.62 195.78 39.89 28.91 r p3
+/bg { 0.5804 0.4078 1 srgb } def
+589.62 282.50 39.89 28.91 r p3
+/bg { 1 0.9490 0.9333 srgb } def
+629.51 253.60 39.89 28.91 r p3
+/bg { 0.9608 0.9294 1 srgb } def
+629.51 455.96 39.89 28.91 r p3
+/bg { 0.1804 0.0784 1 srgb } def
+629.51 427.05 39.89 28.91 r p3
+/bg { 1 0.7686 0.6941 srgb } def
+629.51 369.23 39.89 28.91 r p3
+/bg { 0.3098 0.1647 1 srgb } def
+629.51 398.14 39.89 28.91 r p3
+/bg { 1 0.4980 0.3686 srgb } def
+629.51 484.87 39.89 28.91 r p3
+/bg { 0.6000 0.4275 1 srgb } def
+629.51 340.32 39.89 28.91 r p3
+/bg { 1 0.7255 0.6392 srgb } def
+629.51 311.41 39.89 28.91 r p3
+/bg { 1 0.7725 0.6980 srgb } def
+629.51 224.69 39.89 28.91 r p3
+/bg { 0.4314 0.2627 1 srgb } def
+629.51 166.87 39.89 28.91 r p3
+/bg { 1 0.6667 0.5647 srgb } def
+629.51 137.96 39.89 28.91 r p3
+/bg { 0.7804 0.6549 1 srgb } def
+629.51 109.05 39.89 28.91 r p3
+/bg { 0.7412 0.5961 1 srgb } def
+629.51 195.78 39.89 28.91 r p3
+/bg { 0.1412 0.0549 1 srgb } def
+629.51 282.50 39.89 28.91 r p3
+/bg { 1 0.3059 0.1804 srgb } def
+669.39 253.60 39.89 28.91 r p3
+/bg { 1 0.4275 0.2980 srgb } def
+669.39 455.96 39.89 28.91 r p3
+/bg { 1 0.3647 0.2353 srgb } def
+669.39 427.05 39.89 28.91 r p3
+/bg { 1 0.3922 0.2627 srgb } def
+669.39 369.23 39.89 28.91 r p3
+/bg { 1 0.7686 0.6941 srgb } def
+669.39 398.14 39.89 28.91 r p3
+/bg { 1 0.9098 0.8784 srgb } def
+669.39 484.87 39.89 28.91 r p3
+/bg { 1 0.4627 0.3294 srgb } def
+669.39 340.32 39.89 28.91 r p3
+/bg { 0.6588 0.4980 1 srgb } def
+669.39 311.41 39.89 28.91 r p3
+/bg { 1 0.6353 0.5255 srgb } def
+669.39 224.69 39.89 28.91 r p3
+/bg { 1 0.6039 0.4902 srgb } def
+669.39 166.87 39.89 28.91 r p3
+/bg { 1 0.5686 0.4510 srgb } def
+669.39 137.96 39.89 28.91 r p3
+/bg { 1 0.6039 0.4863 srgb } def
+669.39 109.05 39.89 28.91 r p3
+/bg { 1 0.8275 0.7686 srgb } def
+669.39 195.78 39.89 28.91 r p3
+/bg { 0.9686 0.9451 1 srgb } def
+669.39 282.50 39.89 28.91 r p3
+/bg { 0.8667 0.7765 1 srgb } def
+549.73 253.60 39.89 28.91 r p3
+/bg { 1 0.1725 0.0824 srgb } def
+549.73 455.96 39.89 28.91 r p3
+/bg { 1 0.2275 0.1216 srgb } def
+549.73 427.05 39.89 28.91 r p3
+/bg { 1 0.2824 0.1608 srgb } def
+549.73 369.23 39.89 28.91 r p3
+/bg { 0.7294 0.5843 1 srgb } def
+549.73 398.14 39.89 28.91 r p3
+/bg { 1 0.2667 0.1490 srgb } def
+549.73 484.87 39.89 28.91 r p3
+/bg { 1 0.4118 0.2784 srgb } def
+549.73 340.32 39.89 28.91 r p3
+/bg { 1 0.9490 0.9333 srgb } def
+549.73 311.41 39.89 28.91 r p3
+/bg { 1 0.5686 0.4510 srgb } def
+549.73 224.69 39.89 28.91 r p3
+/bg { 0.7216 0.5725 1 srgb } def
+549.73 166.87 39.89 28.91 r p3
+/bg { 0.3608 0.2039 1 srgb } def
+549.73 137.96 39.89 28.91 r p3
+/bg { 0.5961 0.4235 1 srgb } def
+549.73 109.05 39.89 28.91 r p3
+/bg { 1 0.6235 0.5137 srgb } def
+549.73 195.78 39.89 28.91 r p3
+/bg { 1 0.6824 0.5804 srgb } def
+549.73 282.50 39.89 28.91 r p3
+/bg { 1 0.8078 0.7451 srgb } def
+430.07 253.60 39.89 28.91 r p3
+/bg { 1 0.7922 0.7216 srgb } def
+430.07 455.96 39.89 28.91 r p3
+/bg { 0.7843 0.6588 1 srgb } def
+430.07 427.05 39.89 28.91 r p3
+/bg { 1 0.5765 0.4549 srgb } def
+430.07 369.23 39.89 28.91 r p3
+/bg { 0.8275 0.7176 1 srgb } def
+430.07 398.14 39.89 28.91 r p3
+/bg { 0.9725 0.9529 1 srgb } def
+430.07 484.87 39.89 28.91 r p3
+/bg { 1 0.8275 0.7686 srgb } def
+430.07 340.32 39.89 28.91 r p3
+/bg { 0.9765 0.9569 1 srgb } def
+430.07 311.41 39.89 28.91 r p3
+/bg { 0.9412 0.8980 1 srgb } def
+430.07 224.69 39.89 28.91 r p3
+/bg { 1 0.8863 0.8471 srgb } def
+430.07 166.87 39.89 28.91 r p3
+/bg { 0.6706 0.5059 1 srgb } def
+430.07 137.96 39.89 28.91 r p3
+/bg { 0.7686 0.6353 1 srgb } def
+430.07 109.05 39.89 28.91 r p3
+/bg { 0.7804 0.6510 1 srgb } def
+430.07 195.78 39.89 28.91 r p3
+/bg { 1 0.6431 0.5373 srgb } def
+430.07 282.50 39.89 28.91 r p3
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+/Font1 findfont 16 s
+0 0 0 srgb
+69.99 117.76 (Vincr) 0 ta
+0.240 (istine) tb gr
+61.10 146.67 (T) 0 ta
+-1.920 (r) tb
+0.240 (ichostatin) tb gr
+63.77 175.58 (Rapam) 0 ta
+-0.240 (ycin) tb gr
+143.78 204.49 (Monastrol) 1 0 t
+71.78 233.40 (Mitom) 0 ta
+-0.240 (ycin) tb gr
+50.41 262.31 (Methotre) 0 ta
+-0.480 (xate) tb gr
+143.78 291.22 (H7) 1 0 t
+41.53 320.12 (Geldanam) 0 ta
+-0.240 (ycin) tb gr
+143.78 349.03 (Etoposide) 1 0 t
+59.32 377.94 (Do) 0 ta
+-0.480 (xor) tb
+0.240 (ubicin) tb gr
+39.77 406.85 (Cyclohe) 0 ta
+-0.480 (ximide) tb gr
+143.78 435.76 (Camptothecin) 1 0 t
+61.08 464.67 (Bleb) 0 ta
+-0.160 (bistatin) tb gr
+41.54 493.58 (Aclacinom) 0 ta
+-0.240 (ycin) tb gr
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+/Font1 findfont 16 s
+0 0 0 srgb
+165.07 92.02 (Aclacinom) 330.00 ta
+-0.240 (ycin) tb gr
+204.96 92.02 (Bleb) 330.00 ta
+-0.160 (bistatin) tb gr
+244.84 92.02 (Camptothecin) 0 330.00 t
+284.73 92.02 (Cyclohe) 330.00 ta
+-0.480 (ximide) tb gr
+324.61 92.02 (Do) 330.00 ta
+-0.480 (xor) tb
+0.240 (ubicin) tb gr
+364.50 92.02 (Etoposide) 0 330.00 t
+404.39 92.02 (Geldanam) 330.00 ta
+-0.240 (ycin) tb gr
+444.27 92.02 (H7) 0 330.00 t
+484.16 92.02 (Methotre) 330.00 ta
+-0.480 (xate) tb gr
+524.05 92.02 (Mitom) 330.00 ta
+-0.240 (ycin) tb gr
+563.93 92.02 (Monastrol) 0 330.00 t
+603.82 92.02 (Rapam) 330.00 ta
+-0.240 (ycin) tb gr
+643.70 92.02 (T) 330.00 ta
+-1.920 (r) tb
+0.240 (ichostatin) tb gr
+683.59 92.02 (Vincr) 330.00 ta
+0.240 (istine) tb gr
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+/Font1 findfont 36 s
+0 0 0 srgb
+226.49 10.80 (Dr) 0 ta
+0.540 (ug-Specific Signatures) tb gr
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+/Font1 findfont 36 s
+0 0 0 srgb
+36.65 133.84 (Dr) 90 ta
+0.540 (ug-treated samples) tb gr
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+/bg { 1 1 1 srgb } def
+719.31 235.68 83.50 151.46 r p2
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+gsave
+723.56 239.93 translate
+23.04 115.20 scale
+8 dict dup begin
+  /ImageType 1 def
+  /Width 23 def
+  /Height 115 def
+  /BitsPerComponent 8 def
+  /Decode [0 1 0 1 0 1] def
+  /DataSource currentfile /ASCIIHexDecode filter def
+  /ImageMatrix [23 0 0 -115 0 115] def
+end
+image
+ff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff240fff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2812ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff2e16ff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff361cff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff3c20ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff4426ff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff482aff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff4e2fff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5233ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5838ff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff5c3bff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6140ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6544ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6948ff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff6d4cff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7151ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7554ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7959ff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff7d5cff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8161ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff8465ff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff896aff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8c6dff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff8f71ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9375ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9679ff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9b7eff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ff9e81ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa286ffa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa58affa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effa98effac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffac92ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb097ffb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb39affb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffb79fffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbaa3ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffbda8ffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc0acffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc4b1ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffc7b5ffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcbbaffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffcebdffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd2c2ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd5c6ffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffd9cbffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffdbcfffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffded3ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe2d8ffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe5dcffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffe8e1ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffebe5ffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeaffefeafff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff2eefff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff6f3fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fff9f7fffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfffdfcfefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffefefffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffcf9fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fffaf6fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff7f1fff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff5edfff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff2e8fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5fff0e5ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffede0ffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffebddffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe8d8ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe6d4ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe3d0ffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffe1ccffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdfc8ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffdbc4ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd9c0ffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd6bcffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd3b9ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffd0b4ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffceb0ffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffcaacffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc8a8ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc5a3ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffc2a0ffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbf9bffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffbd98ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb994ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb790ffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb38cffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffb088ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffad84ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffaa80ffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa67cffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ffa379ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9f74ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff9c71ff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff996dff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9569ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff9165ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8d60ff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8a5dff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8558ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff8154ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff7c50ff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff784cff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff7347ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff6e44ff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff683eff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff643bff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5d35ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff5931ff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff502bff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff4926ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff3f20ff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff381bff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff3116ff>
+grestore
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+/Font1 findfont 14 s
+0 0 0 srgb
+752.36 246.91 (-2) 0 0 t
+752.36 269.71 (-1) 0 0 t
+752.36 292.51 (0) 0 0 t
+752.36 315.31 (1) 0 0 t
+752.36 338.11 (2) 0 0 t
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+/Font2 findfont 29 s
+0 0 0 srgb
+723.56 361.48 (v) 0 ta
+-0.580 (alue) tb gr
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+1 1 1 srgb
+0.38 setlinewidth
+[] 0 setdash
+0 setlinecap
+1 setlinejoin
+10.00 setmiterlimit
+np
+723.56 251.93 m
+4.61 0 l
+o
+np
+723.56 274.73 m
+4.61 0 l
+o
+np
+723.56 297.53 m
+4.61 0 l
+o
+np
+723.56 320.33 m
+4.61 0 l
+o
+np
+723.56 343.13 m
+4.61 0 l
+o
+np
+742.00 251.93 m
+4.60 0 l
+o
+np
+742.00 274.73 m
+4.60 0 l
+o
+np
+742.00 297.53 m
+4.60 0 l
+o
+np
+742.00 320.33 m
+4.60 0 l
+o
+np
+742.00 343.13 m
+4.60 0 l
+o
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+/Font1 findfont 43 s
+0 0 0 srgb
+154.68 517.38 (Dr) 0 ta
+0.645 (ug-Dr) tb
+0.645 (ug inter) tb
+-0.430 (action matr) tb
+0.645 (ix) tb gr
+0.00 0.00 827.25 566.25 cl
+0.00 0.00 827.25 566.25 cl
+ep
+%%Trailer
+%%Pages: 1
+%%EOF

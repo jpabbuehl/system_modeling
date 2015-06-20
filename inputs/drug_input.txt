@@ -1,0 +1,15 @@
+Drug	Concentration
+Camptothecin	0.02
+Doxorubicin	0.09
+Methotrexate	10
+Cycloheximide	10
+Aclacinomycin	0.07
+Blebbistatin	10
+Etoposide	2.29
+Geldanamycin	0.02
+H7	16.9
+Mitomycin	5
+Monastrol	10
+Rapamycin	9.74
+Trichostatin	0.03
+Vincristine	10
