@@ -1,7 +1,7 @@
 eset<-initialize_eset()
 eset<-rm_outlier_replicate(eset)
 subpopulations<-knn_subpopulation(eset)
-relevant_probeset<-betr_filter(eset)
+relevant_probeset<-betr_filter(eset,druglist)
 signatures_E2<-model_fit(eset,relevant_probeset,choice='E2')
 signatures_Marcus<-model_fit(eset,relevant_probeset,choice='Marcus')
 signatures_M<-model_fit(eset,relevant_probeset,choice='M')

@@ -1,0 +1,73 @@
+---
+title: "System modeling"
+output: html_document
+---
+
+Required packages (in order)
+```{r}
+require(cluster)
+require(simpleaffy)
+require(IsoGene)
+require(drc)
+require(tcltk)
+require(caret)
+require(mlbench)
+require(Hmisc)
+require(randomForest)
+require(dendextend)
+```
+
+Load data processed by Aroma with probeset rematching
+only arrays that passed through QC (~50 did not)
+```{r}
+source('main.R')
+load(file='dream.rda')
+load(file='dream quantile.rda')
+load(file='dream cyclicloess.rda')
+load(file='druglist.rda')
+```
+
+Merge replicate and clustering
+```{r}
+eset<-rm_outlier_replicate(eset,druglist)
+esetQ<-rm_outlier_replicate(esetQ,c(druglist)
+esetC<-rm_outlier_replicate(esetC,druglist)
+
+# Clustering over time
+subpopulations<-knn_subpopulation(eset)# ok
+subpopulations<-knn_subpopulation(esetQ)# ok
+subpopulations<-knn_subpopulation(esetC)# Not promising
+
+
+# Clustering at leatest timepoint
+clust<-data.frame(drug=pData(eset)[names(subpopulations[[3]]),1],population=subpopulations[[3]])
+clust<-clust[match(clust[,1],druglist),]
+clust[,2]<-as.factor(clust[,2])
+population=matrix(data=0,ncol=length(levels(clust[,2])), nrow=length(druglist), dimnames=list(druglist,1:length(levels(clust[,2]))))
+for(i in 1:length(levels(clust[,2]))){
+  population[,i]=as.numeric(clust$population==i)
+}
+```
+
+Signature definition
+```{r}
+# Detect 
+relevant_probeset<-time_filter(eset,druglist,ctrl='DMSO')
+
+# Correlation dosage and gene expression
+signatures<-model_fit(eset,druglist,relevant_probeset)
+
+# Machine learning for signature optimization
+optimal_signature<-machine_learning(eset,druglist,signatures,baseline='Others')
+```
+
+Drug-Drug interaction matrix and hierarchy prediction
+```{r}
+interaction<-population_targeting(eset,druglist,optimal_signature,within.sig=TRUE)
+
+hierarchy<-assymetric_killing(eset,interation,population)
+```
+
+Prediction
+```{r}
+predictioneset,druglist,interaction,hierarchy,subpopulation=TRUE,spectrum=TRUE,scale=TRUE,top=10)

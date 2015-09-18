@@ -9,7 +9,7 @@ rownames(data)<-data$AffyID
 affy_gene<-data[,c("AffyID","Genename")] 
 data$AffyID<-NULL
 data$Genename<-NULL
-varInfo<-read.table(metadata,header=TRUE,colClasses="character")
+varInfo<-read.table(metadata,header=TRUE,colClasses="character",stringsAsFactors = FALSE)
 rownames(varInfo)<-varInfo$Sample_ID
 varInfo$Sample_ID<-NULL
 data<-as.matrix(data)
