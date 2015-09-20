@@ -78,4 +78,7 @@ time_filter:  ctrl =DMSO, Media, Time..
 
 model_fit:  timepoint=6,12,24
             drug_flag=TRUE
-optimal_signature: cor_threshold
+optimal_signature:  disjoint=FALSE
+                    min=20
+                    max=100
+                    baseline='DMSO', # DMSO, Media or Others
