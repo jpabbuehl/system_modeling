@@ -5,16 +5,17 @@ output: html_document
 
 Required packages (in order)
 ```{r}
-require(cluster)
-require(simpleaffy)
-require(IsoGene)
-require(drc)
-require(tcltk)
-require(caret)
-require(mlbench)
-require(Hmisc)
-require(randomForest)
-require(dendextend)
+library(cluster)
+library(simpleaffy)
+library(IsoGene)
+library(drc)
+library(tcltk)
+library(caret)
+library(mlbench)
+library(Hmisc)
+library(randomForest)
+library(dendextend)
+library(e1071)
 ```
 
 Load data processed by Aroma with probeset rematching
@@ -25,6 +26,7 @@ load(file='dream.rda')
 load(file='dream quantile.rda')
 load(file='dream cyclicloess.rda')
 load(file='druglist.rda')
+load(file='drug concentration.rda')
 ```
 
 Merge replicate and clustering
@@ -34,19 +36,12 @@ esetQ<-rm_outlier_replicate(esetQ,c(druglist)
 esetC<-rm_outlier_replicate(esetC,druglist)
 
 # Clustering over time
-subpopulations<-knn_subpopulation(eset)# ok
-subpopulations<-knn_subpopulation(esetQ)# ok
-subpopulations<-knn_subpopulation(esetC)# Not promising
-
+clustering<-knn_subpopulation(eset)# ok
+clustering<-knn_subpopulation(esetQ)# ok
+clustering<-knn_subpopulation(esetC)# Not promising
 
 # Clustering at leatest timepoint
-clust<-data.frame(drug=pData(eset)[names(subpopulations[[3]]),1],population=subpopulations[[3]])
-clust<-clust[match(clust[,1],druglist),]
-clust[,2]<-as.factor(clust[,2])
-population=matrix(data=0,ncol=length(levels(clust[,2])), nrow=length(druglist), dimnames=list(druglist,1:length(levels(clust[,2]))))
-for(i in 1:length(levels(clust[,2]))){
-  population[,i]=as.numeric(clust$population==i)
-}
+population<-knn_process(eset,druglist,clustering,timepoint=3)
 ```
 
 Signature definition
@@ -63,11 +58,24 @@ optimal_signature<-machine_learning(eset,druglist,signatures,baseline='Others')
 
 Drug-Drug interaction matrix and hierarchy prediction
 ```{r}
-interaction<-population_targeting(eset,druglist,optimal_signature,within.sig=TRUE)
-
-hierarchy<-assymetric_killing(eset,interation,population)
+interaction<-population_targeting(eset,druglist,optimal_signature,within.sig=TRUE,timepoint=6)
+hierarchy<-assymetric_killing(interaction,population)
 ```
 
 Prediction
 ```{r}
-predictioneset,druglist,interaction,hierarchy,subpopulation=TRUE,spectrum=TRUE,scale=TRUE,top=10)
+analysis<-prediction(druglist,interaction,hierarchy,hierarchy_flag=TRUE,drug_flag=FALSE)
+rank<-dream_ranking(analysis)
+```
+
+Parameters to test:
+data: eset,esetQ,esetC
+knn: metric: manattan, euclidean
+timepoint KNN: 1,2,3
+time_filter:  ctrl =DMSO, Media, Time..
+              theshold=0.95
+              time=1, 2, all
+
+model_fit:  timepoint=6,12,24
+            drug_flag=TRUE
+optimal_signature: cor_threshold

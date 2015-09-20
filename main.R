@@ -76,17 +76,17 @@ rm_outlier_replicate <- function(eset,druglist) {
   return (filtered_eset)
 }
 
-knn_subpopulation<-function(eset){
+knn_subpopulation<-function(eset,metric='manhattan'){
   require(cluster)
   require(simpleaffy)
   subpopulation<-list()
   ICeset<-get.array.subset.exprset(eset,"Concentration", "IC20")  
   #Fct for KNN clustering based on silhouette
-  OptK <- function(x, ns=3,nk=14,title,metric='manhattan',...) {
+  OptK <- function(x, ns=3,nk=14,title,...) {
     asw<-numeric(nk-ns)
     for (k in ns:(nk-1)) {
       asw[k-ns+1] <- pam(x, k,metric=metric)$silinfo$avg.width
-      k.best <- which.max(asw)+2
+      k.best <- which.max(asw)+ns-1
     }
     plot(ns:(nk-1), asw, type="s", main=title,
       xlab="K (number of clusters)", ylab = "mean silhouette width")
@@ -105,13 +105,24 @@ knn_subpopulation<-function(eset){
   return (subpopulation)
 }
 
+knn_process<-function(eset,druglist,clustering,timepoint){
+  clust<-data.frame(drug=pData(eset)[names(clustering[[timepoint]]),1],population=clustering[[timepoint]])
+  clust<-clust[match(clust[,1],druglist),]
+  clust[,2]<-as.factor(clust[,2])
+  population=matrix(data=0,ncol=length(levels(clust[,2])), nrow=length(druglist), dimnames=list(druglist,1:length(levels(clust[,2]))))
+  for(i in 1:length(levels(clust[,2]))){
+    population[,i]=as.numeric(clust$population==i)
+  }
+  return (population)  
+}
+
 # 1st step - Find differentially expressed genes
 time_filter <- function(
 eset, #From initialize_eset function
 druglist,
-ctrl='DMSO', # Either DMSO, Media or time (6hr used as control)
+ctrl='DMSO', # Either DMSO, Media or Time (6hr used as control)
 threshold=.95, # above which is interesting
-time='all' # Either 1,2 or all
+time=1 # Either 1,2 or all
 )
 {
   output<-list()
@@ -128,7 +139,7 @@ time='all' # Either 1,2 or all
 
 loop_time_filter <- function(eset,drug_test,ctrl,threshold,time) {
   require(simpleaffy)
-  if(ctrl=='time'){
+  if(ctrl=='Time'){
     eset <- get.array.subset.exprset(eset, "Concentration", c("IC20"))
   	eset <- get.array.subset.exprset(eset, "Drug", drug_test)
     dat <- exprs(eset)[,rank(pData(eset)$Time)]
@@ -157,17 +168,24 @@ loop_time_filter <- function(eset,drug_test,ctrl,threshold,time) {
   
   #Combining results according to parameters
   if(time=='all'){
-    genes<-unique(append(rownames(dat1),rownames(dat2)))
+    output1<-rep(1,length(rownames(dat1)))
+    names(output1)<-rownames(dat1)
+    dat2<-dat2[!(rownames(dat2) %in% rownames(dat1))]
+    output2<-rep(2,length(rownames(dat2)))
+    names(output2)<-rownames(dat2)
+    output<-append(output1,output2)
   }
   else if(time=='1'){
-    genes<-rownames(dat1)
+    output<-rep(1,length(rownames(dat1)))
+    names(output)<-rownames(dat1)
   }
   else if(time=='2'){
-    genes<-rownames(dat2)
+    output<-rep(2,length(rownames(dat2)))
+    names(output)<-rownames(dat2)
   } else{
     stop('Selection parameters wrongs (1,2,all)')
   }
-  return(genes)
+  return(output)
 }
 
 #2nd step - Probeset-Drug concentration model fitting
@@ -179,7 +197,7 @@ drug_flag=TRUE # Use drug data instead of assuming IC vector c(0,0.02,0.2)
 {
   output<-list()
 	for(i in 1:length(druglist)){
-		fit_result<-loop_model_fit(eset,druglist[i],as.vector(unlist(relevant_probeset[druglist[i]])),
+		fit_result<-loop_model_fit(eset,druglist[i],names(relevant_probeset[[druglist[i]]]),
                                drug_flag,timepoint)
 		output<-append(output,list(fit_result))
 		names(output)[i]<-druglist[i]
@@ -304,7 +322,6 @@ loop_ML <- function(eset,drug,druglist,signature,Smin,Smax,baseline,cor_threshol
   
   # Rank features by importance
   range <- seq(Smin,Smax,round(Smax/10))
-  print(info)
 
   ctrl <- rfeControl(functions = rfFuncs,
                      method = "cv",
@@ -317,12 +334,12 @@ loop_ML <- function(eset,drug,druglist,signature,Smin,Smax,baseline,cor_threshol
                    rfeControl = ctrl,
                    allowParallel = TRUE)
    
-  optimal_signature<-predictors(rfProfile)
+  optimal_signature<-caret::predictors(rfProfile)
   return (signature[optimal_signature])
 }
 
 #4th step - Subpopulation targeting - Generate interaction matrix
-population_targeting <- function(eset,druglist,signatures,within.sig=TRUE)
+population_targeting <- function(eset,druglist,signatures,within.sig=TRUE,timepoint)
 {
 	cross.kill<-data.frame(matrix(data=0,ncol=length(druglist), nrow=length(druglist), dimnames=list(druglist,druglist)))
 	cross.survival<-cross.kill
@@ -375,6 +392,7 @@ similarity<-function(eset,drug,druglist,signature,within.sig,timepoint) {
 }
 
 assymetric_killing<-function(interaction,population){
+  require(Rgraphviz)
   # Find drug combinations that are asymetric in terms of killing
   symetry<-sign(interaction$kill)
   diag(symetry)<-0
@@ -397,145 +415,124 @@ assymetric_killing<-function(interaction,population){
   elimination<-reachability(as.matrix(hierarchy))
   drug_spectrum<-rowSums(elimination)
   names(drug_spectrum)<-rownames(interaction$kill)
-  hierarchy%*%population
+  output<-hierarchy%*%population
+  return (output)
+}
+
+
+prediction<-function(druglist,interaction,hierarchy,hierarchy_flag=TRUE,drug_flag=FALSE) {
   
-  prediction<-function(eset,druglist,interaction,hierarchy,subpopulation=TRUE,spectrum=TRUE,scale=TRUE,top=10){
-    druglist<-colnames(targeting_matching[[1]])
-    interaction<-targeting_matching[['targeting']]
-    if(scale){interaction<-scale(interaction)}
-    final_prediction<-data.frame(drug1=character(),drug2=character(),rank=numeric())
-    
-    if(!subpopulation) {
-      for(i in 1:(length(druglist)-1)) {
-        for(j in (i+1):length(druglist)) {
-          drug_combination<-interaction[druglist[i],druglist[j]]+interaction[druglist[j],druglist[i]]
-          final_prediction<-rbind(final_prediction,data.frame(drug1=druglist[i],drug2=druglist[j],rank=drug_combination))
-        }	
+  final_prediction<-data.frame(drug1=character(),drug2=character(),rank=numeric(),category=numeric())
+  
+  if(!hierarchy_flag) {
+    for(i in 1:(length(druglist)-1)) {
+      for(j in (i+1):length(druglist)) {
+        drug_combination<-(interaction$kill[druglist[i],druglist[j]]+interaction$kill[druglist[j],druglist[i]])-
+          (interaction$survival[druglist[i],druglist[j]]+interaction$survival[druglist[j],druglist[i]])
+        final_prediction<-rbind(final_prediction,data.frame(drug1=druglist[i],drug2=druglist[j],rank=drug_combination,category=1))
+      }	
+    }
+  } else {
+    # Hierarchy based scoring  
+    for(i in 1:(length(druglist)-1)) {
+      for(j in (i+1):length(druglist)) {
+        killing<-apply(hierarchy[c(druglist[i:j]),],2,max)
+        drug_combination<-(interaction$kill[druglist[i],druglist[j]]+interaction$kill[druglist[j],druglist[i]])-
+          (interaction$survival[druglist[i],druglist[j]]+interaction$survival[druglist[j],druglist[i]])
+        final_prediction<-rbind(final_prediction,data.frame(drug1=druglist[i],drug2=druglist[j],rank=drug_combination,category=sum(killing)))
+       }
+    }
+  }
+  
+  rank<-order(final_prediction$category,final_prediction$rank,decreasing=TRUE)
+  final_prediction<-final_prediction[rank,]
+  final_prediction$rank<-seq(1,nrow(final_prediction),1)
+  return (final_prediction)
+}
+
+dream_ranking <- function (prediction) {
+  
+  seed<-10000
+  data<-read.table(file='inputs/drug_synergy_data_IC20.txt',sep='\t',header=TRUE)
+  colnames(data) <- c('drug1','drug2','eob','eob_error')
+  unique_drugs <- unique(data$drug1)
+  drugpair <- paste(data$drug1,'_',data$drug2,sep="")
+  idx <-order(data$eob)
+  eob <- data$eob[idx]
+  eob_error <-data$eob_error[idx]
+  drugpair <- drugpair[idx]
+  
+  p_matrix <- probability_matrix(eob,eob_error)
+  colnames(prediction) <-c("drug1","drug2","rank")
+  
+  drugpair_pred<-vector()
+  # Deal with prediction
+  for(i in 1:length(drugpair)) {
+    current_compounds<- as.vector(unlist(strsplit(drugpair[i],'_')))
+    if(length(unique(current_compounds))>1) {
+      match1<-grepl(current_compounds[1],prediction$drug1)
+      match2<-grepl(current_compounds[2],prediction$drug2)
+      
+      # No intersection, switch columns
+      if(!sum(match1*match2)) {
+        match1<-grepl(current_compounds[2],prediction$drug1)
+        match2<-grepl(current_compounds[1],prediction$drug2)	
       }
-    } else {
-      # Hierarchy based scoring
-      targeting_matrix<- hierarchy_subpopulation(targeting_matching,eset,subpopulations,graph_display=FALSE)
-      for(i in 1:(length(druglist)-1)) {
-        for(j in (i+1):length(druglist)) {
-          if(!spectrum) {
-            # Hierarchy based on drug and subpopulation at timepoint 3
-            drug_combination <- interaction[druglist[i],druglist[j]] * children_killing(druglist[j],targeting_matrix,interaction) + interaction[druglist[j],druglist[i]] * children_killing(druglist[i],targeting_matrix,interaction)
-          } else {
-            drug_combination <- interaction[druglist[i],druglist[j]] * children_killing(druglist[j],targeting_matrix,interaction) * (1/targeting_matrix$spectrum[[druglist[j]]]) + 
-              interaction[druglist[j],druglist[i]] * children_killing(druglist[i],targeting_matrix,interaction) * (1/targeting_matrix$spectrum[[druglist[i]]])
-          }
-          final_prediction<-rbind(final_prediction,data.frame(drug1=druglist[i],drug2=druglist[j],rank=drug_combination))
-        }
-      }
-    }
-    
-    rank<-order(final_prediction$rank,decreasing=TRUE)
-    final_prediction$rank<-rank
-    final_prediction<-final_prediction[with(final_prediction, order(rank)), ]
-    rank<-ncbi_scoring(final_prediction)
-    cat(paste('Top combination prediction: ',network_scoring(final_prediction,druglist,top),sep=""))
-  }
-  
-}
-children_killing<- function(drug,targeting_matrix,interaction) {
-  
-  population<-targeting_matrix[['drug']]
-  children<-colnames(population)[population[drug,]>0]
-  round<-0
-  efficiency<-c(0)
-  past_children<-vector()
-  repeat{
-    if(any(is.na(children))) { break }
-    if(round>3) {break}
-    efficiency<-append(efficiency,as.vector(unlist(interaction[children,])))
-    past_children<-append(past_children,children)
-    children<-colnames(population)[population[children,]>0]
-    children<-setdiff(children,past_children)
-    round<-round+1
-  }
-  
-  return (max(efficiency))
-}
-
-hierarchy_subpopulation <- function(data,eset,subpopulations,graph_display=FALSE) {
-  library(Rgraphviz)
-  #Use surviving population from knn at t=24hr
-  clustering<-subpopulations$clustering
-  names(clustering)<-pData(eset)[names(subpopulations$clustering),]$Drug
-  temp<-names(table(clustering))[table(clustering)>1]
-  
-  drug_population<-matrix(data=0,nrow=14,ncol=length(temp))
-  colnames(drug_population)<-temp
-  rownames(drug_population)<-rownames(data[[1]])
-  for(i in 1:length(temp)){
-    drug_population[unique(names(clustering)[clustering==temp[i]]),i]<-1
-  }
-  
-  # Rows are parent nodes, Cols are children nodes
-  hierarchy<-as.matrix(data[['des']])
-  hierarchy[,]<-0	
-  # Find drug combinations that are asymetric
-  sym_test<-sign(as.matrix(data[['des']]))
-  sym_test[sym_test<0]<-0
-  for(i in 1:length(sym_test[,1])) {
-    for(j in 1:length(sym_test[1,])) {
-      if (sym_test[i,j]>sym_test[j,i]) {hierarchy[i,j]=1;}
+      
+      if(sum(match1*match2)) {
+        match_pred<-match1*match2
+        class(match_pred)<-'logical'
+        rank_pred<-as.numeric(as.vector(unlist(prediction$rank[match_pred])))
+        drugpair_pred<-append(drugpair_pred,rank_pred)
+      } else {stop(i)}
     }
   }
+  if(length(drugpair_pred)!=length(drugpair)) {stop('error prediction size')}
   
-  #Combine
-  output<-change_matrix_dimension(hierarchy,drug_population)
-  
-  am.graph<-new("graphAM", adjMat=output, edgemode="directed")
-  plot(am.graph,"dot", attrs = list(node = list(fillcolor = "lightblue",fontsize=15,shape='rectangle',width=1,height=0.5),
-                              edge = list(arrowsize=1)))
-  
-# 	graph <- graph.adjacency(as.matrix(output),mode="directed",weighted=T)
-# 	mst <- minimum.spanning.tree(graph)
-# 	if(graph_display) {
-# 		plot.igraph(mst,layout=layout.fruchterman.reingold,vertex.size=20,
-# 			vertex.label=V(mst)$name,	
-# 			main='Hierarchy of subpopulations\nbased on non-symetric killing',
-# 			vertex.label.color="black",
-# 			edge.label.color="black"
-# 	)
-# 	}
-# 	#Return graph as matrix with weight
-  x<-list(hierarchy)
-  importance<-rowSums(output)
-  spectrum<-as.vector(drug_population%*%importance)
-  names(spectrum)<-rownames(drug_population)
-  
-  x<-append(x,list(spectrum))
-
-  names(x)<-c('drug','spectrum')
-	return (x)
-}
-
-# Extra function
-factor_dataframe <- function(dataframe){
-    class.data  <- sapply(dataframe, class)
-    factor.vars <- class.data[class.data == "factor"]
-    for (colname in names(factor.vars)) {
-       dataframe[,colname] <- as.character(dataframe[,colname])
-    }
-    return (dataframe)
-}
-
-change_matrix_dimension<-function(M,V){
-  #M Original matrix
-  #V Rule matrix
-  
-  output<-matrix(data=NA,nrow=ncol(V),ncol=ncol(V))
-  rownames(output)<-colnames(V)
-  colnames(output)<-colnames(V)
-  
-  for(i in 1:ncol(V)){
-    for(j in 1:ncol(V)){
-      dimension1<-rownames(V)[V[,i]>0]
-      dimension2<-rownames(V)[V[,j]>0]
-      output[i,j]<-sum(M[dimension1,dimension2])
-    }
+  cindex_nulldist<-vector()
+  # Computed weighted cindex,null dist and pvalue
+  weighted_cindex <- concordance(drugpair_pred,1:length(drugpair),p_matrix)
+  for (i in 1:seed) {
+    cindex_nulldist[i] <- concordance(sample(length(drugpair)),1:length(drugpair),p_matrix)
   }
-  return(output)  
+  pv_cindex <- length(cindex_nulldist[cindex_nulldist>=weighted_cindex])/length(cindex_nulldist)
+  cat('c-index=',weighted_cindex,'\n')
+  cat('p-value=',pv_cindex,'\n')
+  
+  #Ranking test
+  ranking<-read.table(file='inputs/ranking.txt',sep=";",header=TRUE)
+  final_rank<-ranking[ranking$cindex<weighted_cindex,][1,2]
+  cat('Ranking=',final_rank,'\n')
+  return(final_rank)
+}
+
+probability_matrix <- function (x,x_std) {
+  x <- as.vector(unlist(x))
+  n <- length(x)
+  p_matrix <- rep(0,n)
+  X <- matrix(x,n,n)
+  X <- X-t(X)
+  X_std <- matrix(x_std,n,n)
+  X_std <- sqrt(X_std^2 + t(X_std)^2)
+  library(VGAM)
+  p_matrix <- .5*(1 + erf(X/X_std))
+  return (p_matrix)
+}
+
+concordance <- function (x, y,p_matrix) {
+  x <- as.vector(unlist(x))
+  y <- as.vector(unlist(y))
+  n <- length(x)
+  X <- matrix(x,n,n)
+  Y <- matrix(y,n,n)
+  C <- sign(X-t(X))==sign(Y-t(Y))
+  
+  C <- C*(1-t(p_matrix)) + (1-C)*t(p_matrix)
+  C <- sum(sum(C[lower.tri(C)]))/n/(n-1)*2;
+  return (C)
+}
+
+top_ranking<-function(prediction,top){
+  
+  
 }
