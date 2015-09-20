@@ -16,6 +16,11 @@ library(Hmisc)
 library(randomForest)
 library(dendextend)
 library(e1071)
+library(doSNOW)
+library(foreach)
+library(VGAM)
+library(Rgraphviz)
+library(sna)
 ```
 
 Load data processed by Aroma with probeset rematching
@@ -32,7 +37,7 @@ load(file='drug concentration.rda')
 Merge replicate and clustering
 ```{r}
 eset<-rm_outlier_replicate(eset,druglist)
-esetQ<-rm_outlier_replicate(esetQ,c(druglist)
+esetQ<-rm_outlier_replicate(esetQ,druglist)
 esetC<-rm_outlier_replicate(esetC,druglist)
 
 # Clustering over time
@@ -44,41 +49,132 @@ clustering<-knn_subpopulation(esetC)# Not promising
 population<-knn_process(eset,druglist,clustering,timepoint=3)
 ```
 
-Signature definition
+Signature definition, 3 complementary methods, which combination to choose?
 ```{r}
 # Detect 
-relevant_probeset<-time_filter(eset,druglist,ctrl='DMSO')
+signatures<-time_filter(eset,druglist,ctrl='DMSO',threshold=.95,timepoint=12)
 
 # Correlation dosage and gene expression
-signatures<-model_fit(eset,druglist,relevant_probeset)
+signatures_dose<-model_fit(eset,druglist,signatures,timepoint=1,drug_flag=FALSE)
 
 # Machine learning for signature optimization
-optimal_signature<-machine_learning(eset,druglist,signatures,baseline='Others')
+signatures_rf<-machine_learning(eset,druglist,signatures_dose,baseline='Others')
 ```
 
 Drug-Drug interaction matrix and hierarchy prediction
 ```{r}
-interaction<-population_targeting(eset,druglist,optimal_signature,within.sig=TRUE,timepoint=6)
+interaction<-population_targeting(eset,druglist,signatures_rf,within.sig=TRUE,timepoint=1)
 hierarchy<-assymetric_killing(interaction,population)
 ```
 
 Prediction
 ```{r}
-analysis<-prediction(druglist,interaction,hierarchy,hierarchy_flag=TRUE,drug_flag=FALSE)
+analysis<-prediction(druglist,interaction,hierarchy,drug_data,hierarchy_flag=TRUE,drug_flag=FALSE)
 rank<-dream_ranking(analysis)
+top<-top_ranking(analysis,top=10)
 ```
 
-Parameters to test:
-data: eset,esetQ,esetC
-knn: metric: manattan, euclidean
-timepoint KNN: 1,2,3
-time_filter:  ctrl =DMSO, Media, Time..
-              theshold=0.95
-              time=1, 2, all
+Combinationexpand.grid(a,b,a)
+```{r}
+#data
+file<-c('dream.rda')
 
-model_fit:  timepoint=6,12,24
-            drug_flag=TRUE
-optimal_signature:  disjoint=FALSE
-                    min=20
-                    max=100
-                    baseline='DMSO', # DMSO, Media or Others
+# Knn metric
+knn_metric<-c('manhattan')
+
+# Time filter
+TF_ctrl<-c('DMSO','Time')
+TF_threshold<-c(0.9,0.95)
+TF_timepoint<-c(1,12)
+
+# Model filter
+MF_timepoint<-c(1,2)
+MF_drug_flag<-c(FALSE)
+
+# Machine learning filter
+MLF_disjoint<-c(TRUE,FALSE)
+MLF_min<-c(20)
+MLF_max<-c(100,200)
+MLF_baseline<-c('DMSO','Others')
+MLF_threshold<-c(0.75)
+
+# Interaction
+INT_within.sig<-c(TRUE,FALSE)
+INT_timepoint<-c(1,2,3)
+
+# Prediction
+PRED_hierarchy_flag<-c(TRUE,FALSE)
+PRED_drug_flag<-c(TRUE,FALSE)
+
+# Combination grid for Parallel computing
+combination<- expand.grid(TF_ctrl,TF_threshold,TF_timepoint,
+                          MF_timepoint,MF_drug_flag,
+                          MLF_disjoint,MLF_min,MLF_max,MLF_baseline,MLF_threshold,
+                          INT_within.sig,INT_timepoint,
+                          PRED_hierarchy_flag,PRED_drug_flag,stringsAsFactors = FALSE)
+```
+
+Parallel computing
+```{r}
+
+nbComb<-nrow(combination)
+cl<-makeCluster(29) # Adjust according to CPU cores available
+registerDoSNOW(cl)
+
+packages_register<-c('cluster','simpleaffy','IsoGene','drc','tcltk','caret','mlbench','Hmisc','randomForest','dendextend','e1071','VGAM','Rgraphviz','sna')
+
+load(file='dream.rda')
+load(file='druglist.rda')
+load(file='drug concentration.rda')
+eset<-rm_outlier_replicate(eset,druglist)
+clustering<-knn_subpopulation(eset)
+population<-knn_process(eset,druglist,clustering,timepoint=3)
+
+rank_score<-rep(99,nbComb)
+top_score<-rep(99,nbComb)
+
+rank_score_dose<-rep(99,nbComb)
+top_score_dose<-rep(99,nbComb)
+
+rank_score_rf<-rep(99,nbComb)
+top_score_rf<-rep(99,nbComb)
+
+foreach(i=1:nbComb,.packages=packages_register) %dopar% {
+  
+  signatures<-time_filter(eset,druglist,ctrl=combination[i,1],threshold=combination[i,2],timepoint=combination[i,3])
+  
+  signatures_dose<-model_fit(eset,druglist,signatures,timepoint=combination[i,4],drug_flag=combination[i,5])
+  
+  signatures_rf<-machine_learning(eset,druglist,signatures_dose,disjoint=combination[i,6],
+                                  min=combination[i,7],max=combination[i,8],baseline=combination[i,9])
+
+  interaction<-population_targeting(eset,druglist,signatures,within.sig=combination[i,10],timepoint=combination[i,11])
+  interaction_dose<-population_targeting(eset,druglist,signatures_dose,within.sig=combination[i,10],timepoint=combination[i,11])
+  interaction_rf<-population_targeting(eset,druglist,signatures_rf,within.sig=combination[i,10],timepoint=combination[i,11])
+  
+  hierarchy<-assymetric_killing(interaction,population)
+  hierarchy_dose<-assymetric_killing(interaction_dose,population)
+  hierarchy_rf<-assymetric_killing(interaction_rf,population)
+  
+  analysis<-prediction(druglist,interaction,hierarchy,hierarchy_flag=combination[i,12],drug_flag=combination[i,13])
+  analysis_dose<-prediction(druglist,interaction_dose,hierarchy_dose,hierarchy_flag=combination[i,12],drug_flag=combination[i,13])
+  analysis_rf<-prediction(druglist,interaction_rf,hierarchy_rf,hierarchy_flag=combination[i,12],drug_flag=combination[i,13])
+
+  Rank<-dream_ranking(analysis)
+  Rank_dose<-dream_ranking(analysis_dose)
+  Rank_rf<-dream_ranking(analysis_rf)
+  
+  Top<-top_ranking(analysis,top=10)
+  Top_dose<-top_ranking(analysis_dose,top=10)
+  Top_rf<-top_ranking(analysis_rf,top=10)
+  
+  #save results
+  rank_score[i]<-Rank
+  top_score[i]<-Top
+  rank_score_dose[i]<-Rank_dose
+  top_score_dose[i]<-Top_dose
+  rank_score_rf[i]<-Rank_rf
+  top_score_rf[i]<-Top_rf
+}
+
+```

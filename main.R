@@ -77,8 +77,6 @@ rm_outlier_replicate <- function(eset,druglist) {
 }
 
 knn_subpopulation<-function(eset,metric='manhattan'){
-  require(cluster)
-  require(simpleaffy)
   subpopulation<-list()
   ICeset<-get.array.subset.exprset(eset,"Concentration", "IC20")  
   #Fct for KNN clustering based on silhouette
@@ -122,23 +120,22 @@ eset, #From initialize_eset function
 druglist,
 ctrl='DMSO', # Either DMSO, Media or Time (6hr used as control)
 threshold=.95, # above which is interesting
-time=1 # Either 1,2 or all
+timepoint=1 # Either 1,2 or 12
 )
 {
   output<-list()
   
 	for(i in 1:length(druglist)){
-		time_result <-loop_time_filter(eset,druglist[i],ctrl,threshold,time)
+		time_result <-loop_time_filter(eset,druglist[i],ctrl,threshold,timepoint)
 		output<-append(output,list(time_result))
     names(output)[i]<-druglist[i]
-    print(paste(i,' - ',druglist[i],sep=''))
+    #print(paste(i,' - ',druglist[i],sep=''))
 	}
 	cat('End Time Filtering\n')
 	return (output)
 }
 
-loop_time_filter <- function(eset,drug_test,ctrl,threshold,time) {
-  require(simpleaffy)
+loop_time_filter <- function(eset,drug_test,ctrl,threshold,timepoint) {
   if(ctrl=='Time'){
     eset <- get.array.subset.exprset(eset, "Concentration", c("IC20"))
   	eset <- get.array.subset.exprset(eset, "Drug", drug_test)
@@ -167,7 +164,7 @@ loop_time_filter <- function(eset,drug_test,ctrl,threshold,time) {
       }
   
   #Combining results according to parameters
-  if(time=='all'){
+  if(time==12){
     output1<-rep(1,length(rownames(dat1)))
     names(output1)<-rownames(dat1)
     dat2<-dat2[!(rownames(dat2) %in% rownames(dat1))]
@@ -175,15 +172,15 @@ loop_time_filter <- function(eset,drug_test,ctrl,threshold,time) {
     names(output2)<-rownames(dat2)
     output<-append(output1,output2)
   }
-  else if(time=='1'){
+  else if(time==1){
     output<-rep(1,length(rownames(dat1)))
     names(output)<-rownames(dat1)
   }
-  else if(time=='2'){
+  else if(time==2){
     output<-rep(2,length(rownames(dat2)))
     names(output)<-rownames(dat2)
   } else{
-    stop('Selection parameters wrongs (1,2,all)')
+    stop('Selection parameters wrongs (1,2,12)')
   }
   return(output)
 }
@@ -191,7 +188,7 @@ loop_time_filter <- function(eset,drug_test,ctrl,threshold,time) {
 #2nd step - Probeset-Drug concentration model fitting
 model_fit <- function(
 eset,druglist,relevant_probeset,
-timepoint=6,
+timepoint=1,
 drug_flag=TRUE # Use drug data instead of assuming IC vector c(0,0.02,0.2)
 )
 {
@@ -201,21 +198,22 @@ drug_flag=TRUE # Use drug data instead of assuming IC vector c(0,0.02,0.2)
                                drug_flag,timepoint)
 		output<-append(output,list(fit_result))
 		names(output)[i]<-druglist[i]
-		print(paste(i,' - ',druglist[i],sep=''))
+		#print(paste(i,' - ',druglist[i],sep=''))
 	}
-  cat('End Model Fitting\n')
+  #cat('End Model Fitting\n')
 	return(output)
 }
 
 loop_model_fit <- function(eset,drug,probeset,drug_flag,timepoint) {
 	
 	# Libraries and options
-	require(IsoGene)
-	require(drc)
-  require(tcltk)			
+		
 	set.seed(1234)
   
   # Preparation Data
+	if(timepoint==1){timepoint=6}
+	if(timepoint==2){timepoint=12}
+	if(timepoint==3){timepoint=24}
 	eset<-get.array.subset.exprset(eset,"Drug", c("DMSO",drug))
 	eset<-get.array.subset.exprset(eset,"Time", timepoint)
 	Expression<-as.data.frame(exprs(eset[probeset,]))
@@ -269,19 +267,13 @@ machine_learning <- function(eset,druglist,signatures,disjoint=FALSE,min=20,max=
     ML_result<-loop_ML(eset,druglist[i],druglist,signatures[[druglist[i]]],min,max,baseline,cor_threshold)
     output<-append(output,list(ML_result))
     names(output)[i]<-druglist[i]
-    print(paste(i,' - ',druglist[i],sep=''))
+    #print(paste(i,' - ',druglist[i],sep=''))
   }
-  cat('End Machine learning\n')
+  #cat('End Machine learning\n')
   return(output)    
 }
 
 loop_ML <- function(eset,drug,druglist,signature,Smin,Smax,baseline,cor_threshold){
-  require(caret)
-  require(mlbench)
-  require(Hmisc)
-  require(randomForest)
-  require(dendextend)
-  require(e1071)
   set.seed(100)
   
   subset<-get.array.subset.exprset(eset,"Time",6)
@@ -332,7 +324,7 @@ loop_ML <- function(eset,drug,druglist,signature,Smin,Smax,baseline,cor_threshol
   rfProfile <- rfe(x,info,
                    sizes = range,
                    rfeControl = ctrl,
-                   allowParallel = TRUE)
+                   allowParallel = FALSE)
    
   optimal_signature<-caret::predictors(rfProfile)
   return (signature[optimal_signature])
@@ -348,7 +340,7 @@ population_targeting <- function(eset,druglist,signatures,within.sig=TRUE,timepo
     targeting<-similarity(eset,druglist[i],druglist,signatures[[i]],within.sig,timepoint)
     cross.kill[druglist[i],rownames(targeting)]=targeting$kill
     cross.survival[druglist[i],rownames(targeting)]=targeting$survival
-    print(paste(i,' - ',druglist[i],sep=''))
+    #print(paste(i,' - ',druglist[i],sep=''))
 	}
   
   # Combination interaction matrices
@@ -361,7 +353,6 @@ cosine <- function(x,y) {return(x %*% y / sqrt(x%*%x * y%*%y))}
 
 similarity<-function(eset,drug,druglist,signature,within.sig,timepoint) {
 
-  require(simpleaffy)
   set.seed(1234)
   
 	eset_drug<-get.array.subset.exprset(eset, "Concentration","IC20")
@@ -391,8 +382,7 @@ similarity<-function(eset,drug,druglist,signature,within.sig,timepoint) {
 	return (output)
 }
 
-assymetric_killing<-function(interaction,population){
-  require(Rgraphviz)
+assymetric_killing<-function(interaction,population,plot=FALSE){
   # Find drug combinations that are asymetric in terms of killing
   symetry<-sign(interaction$kill)
   diag(symetry)<-0
@@ -405,12 +395,11 @@ assymetric_killing<-function(interaction,population){
     }
   }
   
-  am.graph<-new("graphAM", adjMat=as.matrix(hierarchy), edgemode="directed")
-  plot(am.graph,"dot", attrs = list(node = list(fillcolor = "lightblue",fontsize=15,shape='circle',width=1,height=0.5),
-                                    edge = list(arrowsize=0.5)))
-  
-  # Social network Analysis :)
-  require(sna)
+  if(plot){
+    am.graph<-new("graphAM", adjMat=as.matrix(hierarchy), edgemode="directed")
+    plot(am.graph,"dot", attrs = list(node = list(fillcolor = "lightblue",fontsize=15,shape='circle',width=1,height=0.5),
+                                      edge = list(arrowsize=0.5)))
+  }
   # calculate reachibility
   elimination<-reachability(as.matrix(hierarchy))
   drug_spectrum<-rowSums(elimination)
@@ -420,15 +409,23 @@ assymetric_killing<-function(interaction,population){
 }
 
 
-prediction<-function(druglist,interaction,hierarchy,hierarchy_flag=TRUE,drug_flag=FALSE) {
+prediction<-function(druglist,interaction,hierarchy,drug_data,hierarchy_flag=TRUE,drug_flag=FALSE) {
   
   final_prediction<-data.frame(drug1=character(),drug2=character(),rank=numeric(),category=numeric())
+  x<-drug_data$rank
+  normalized=1-normalized
+  names(normalized)<-rownames(drug_data)
   
   if(!hierarchy_flag) {
     for(i in 1:(length(druglist)-1)) {
       for(j in (i+1):length(druglist)) {
+        if(drug_flag){
+          drug_combination<-(interaction$kill[druglist[i],druglist[j]]*normalized[names(normalized)==druglist[i]]+interaction$kill[druglist[j],druglist[i]]*normalized[names(normalized)==druglist[j]])-
+            (interaction$survival[druglist[i],druglist[j]]+interaction$survival[druglist[j],druglist[i]])
+        } else {
         drug_combination<-(interaction$kill[druglist[i],druglist[j]]+interaction$kill[druglist[j],druglist[i]])-
           (interaction$survival[druglist[i],druglist[j]]+interaction$survival[druglist[j],druglist[i]])
+        }
         final_prediction<-rbind(final_prediction,data.frame(drug1=druglist[i],drug2=druglist[j],rank=drug_combination,category=1))
       }	
     }
@@ -437,8 +434,13 @@ prediction<-function(druglist,interaction,hierarchy,hierarchy_flag=TRUE,drug_fla
     for(i in 1:(length(druglist)-1)) {
       for(j in (i+1):length(druglist)) {
         killing<-apply(hierarchy[c(druglist[i:j]),],2,max)
-        drug_combination<-(interaction$kill[druglist[i],druglist[j]]+interaction$kill[druglist[j],druglist[i]])-
-          (interaction$survival[druglist[i],druglist[j]]+interaction$survival[druglist[j],druglist[i]])
+        if(drug_flag){
+          drug_combination<-(interaction$kill[druglist[i],druglist[j]]*normalized[names(normalized)==druglist[i]]+interaction$kill[druglist[j],druglist[i]]*normalized[names(normalized)==druglist[j]])-
+            (interaction$survival[druglist[i],druglist[j]]+interaction$survival[druglist[j],druglist[i]])
+        } else {
+          drug_combination<-(interaction$kill[druglist[i],druglist[j]]+interaction$kill[druglist[j],druglist[i]])-
+            (interaction$survival[druglist[i],druglist[j]]+interaction$survival[druglist[j],druglist[i]])
+        }
         final_prediction<-rbind(final_prediction,data.frame(drug1=druglist[i],drug2=druglist[j],rank=drug_combination,category=sum(killing)))
        }
     }
@@ -496,13 +498,13 @@ dream_ranking <- function (prediction) {
     cindex_nulldist[i] <- concordance(sample(length(drugpair)),1:length(drugpair),p_matrix)
   }
   pv_cindex <- length(cindex_nulldist[cindex_nulldist>=weighted_cindex])/length(cindex_nulldist)
-  cat('c-index=',weighted_cindex,'\n')
-  cat('p-value=',pv_cindex,'\n')
+  #cat('c-index=',weighted_cindex,'\n')
+  #cat('p-value=',pv_cindex,'\n')
   
   #Ranking test
   ranking<-read.table(file='inputs/ranking.txt',sep=";",header=TRUE)
   final_rank<-ranking[ranking$cindex<weighted_cindex,][1,2]
-  cat('Ranking=',final_rank,'\n')
+  #cat('Ranking=',final_rank,'\n')
   return(final_rank)
 }
 
@@ -514,7 +516,6 @@ probability_matrix <- function (x,x_std) {
   X <- X-t(X)
   X_std <- matrix(x_std,n,n)
   X_std <- sqrt(X_std^2 + t(X_std)^2)
-  library(VGAM)
   p_matrix <- .5*(1 + erf(X/X_std))
   return (p_matrix)
 }
@@ -532,7 +533,19 @@ concordance <- function (x, y,p_matrix) {
   return (C)
 }
 
-top_ranking<-function(prediction,top){
+top_ranking<-function(analysis,top){
+  gs <- read.table(file='inputs/drug_synergy_data_IC20.txt',sep='\t',header=TRUE,stringsAsFactors = FALSE)
+  colnames(gs) <- c('drug1','drug2','eob','eob_error')
+  gs <- gs[1:top,1:2]
+  analysis <- analysis[1:top,1:2]
+  score=0
   
-  
+  for(i in 1:nrow(analysis)){
+    for(j in 1:nrow(gs)){
+      if((gs[i,1]==analysis[j,1] && gs[i,2]==analysis[j,2]) || (gs[i,1]==analysis[j,2] && gs[i,2]==analysis[j,1])){
+        score=score+1
+      }
+    }
+  }
+  return (score)
 }
